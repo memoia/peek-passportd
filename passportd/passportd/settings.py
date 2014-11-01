@@ -29,11 +29,13 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'corsheaders',
     'api',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -49,6 +51,9 @@ DATABASES = {
         'NAME': os.path.join(os.path.dirname(BASE_DIR), 'db.sqlite3'),
     }
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
+#CORS_ORIGIN_WHITELIST = ()
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
