@@ -6,18 +6,22 @@ export PATH := $(ENV)/bin:$(PATH)
 .PHONY: test run clean distclean
 
 test: $(ENV)/bin/coverage $(ENV)/bin/django-admin
-	coverage erase
-	coverage run \
-		--source='.' \
-		--omit='env/**/*.py,**/test*,**/__init__*,passportd/manage.py' \
-		passportd/manage.py test && (coverage report; coverage html)
+	cd passportd; ( \
+	  coverage erase; \
+	  coverage run \
+	    --branch \
+	    --source='.' \
+	    --omit='manage.py,passportd/**,**/test*,**/__init__*' \
+	    manage.py test && ( \
+	      coverage report; \
+	      coverage html -d $(CURDIR)/htmlcov ))
 
 run: manage
 	./manage migrate
 	./manage runserver 0.0.0.0:3000
 
 clean:
-	rm -rf .coverage htmlcov/ db.sqlite3
+	rm -rf passportd/.coverage htmlcov/ db.sqlite3
 
 distclean:
 	git clean -dfx
