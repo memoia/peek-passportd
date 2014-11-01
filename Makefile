@@ -11,7 +11,7 @@ test: $(ENV)/bin/coverage $(ENV)/bin/django-admin
 	  coverage run \
 	    --branch \
 	    --source='.' \
-	    --omit='manage.py,passportd/**,**/test*,**/__init__*' \
+	    --omit='manage.py,passportd/**,**/test*,**/__init__*,api/migrations/**' \
 	    manage.py test && ( \
 	      coverage report; \
 	      coverage html -d $(CURDIR)/htmlcov ))
