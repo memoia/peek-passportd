@@ -2,5 +2,6 @@
 /db.sqlite3
 /.coverage
 /htmlcov
+/manage
 *.sw[po]
 *.py[co]

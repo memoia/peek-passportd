@@ -21,6 +21,11 @@ clean:
 distclean:
 	git clean -dfx
 
+manage:
+	echo '#!/bin/bash' >> $@
+	echo "$(ENV)/bin/python $(CURDIR)/passportd/manage.py \$$*" >> $@
+	chmod +x $@
+
 $(ENV)/bin/django-admin: | $(ENV)
 	pip install -r requirements/base.txt
 
