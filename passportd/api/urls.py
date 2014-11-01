@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 
-from api import views
+from api.views import PingView
 
 urlpatterns = patterns('',
-    url(r'^$', views.index, name='api_index'),
+    url(r'^$', PingView.as_view(), name='ping'),
 )

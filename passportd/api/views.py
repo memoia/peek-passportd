@@ -1,5 +1,7 @@
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.views.generic import View
 
-def index(request):
-    return JsonResponse({"status": "OK"})
+
+class PingView(View):
+    def get(self, request):
+        return JsonResponse({"status": "OK"})
