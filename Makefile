@@ -12,8 +12,9 @@ test: $(ENV)/bin/coverage $(ENV)/bin/django-admin
 		--omit='env/**/*.py,**/test*,**/__init__*,passportd/manage.py' \
 		passportd/manage.py test && (coverage report; coverage html)
 
-run: $(ENV)/bin/django-admin
-	python passportd/manage.py runserver 0.0.0.0:3000
+run: manage
+	./manage migrate
+	./manage runserver 0.0.0.0:3000
 
 clean:
 	rm -rf .coverage htmlcov/ db.sqlite3
@@ -21,7 +22,7 @@ clean:
 distclean:
 	git clean -dfx
 
-manage:
+manage: $(ENV)/bin/django-admin
 	echo '#!/bin/bash' >> $@
 	echo "$(ENV)/bin/python $(CURDIR)/passportd/manage.py \$$*" >> $@
 	chmod +x $@
