@@ -3,7 +3,7 @@ from restless.views import Endpoint
 from restless.http import Http400
 from restless.models import serialize
 
-from api.models import Timeslot, Boat, Assignment
+from api.models import Timeslot, Boat, Assignment, Booking
 from api.util import prepare_record, date_bounds
 
 
@@ -68,7 +68,7 @@ class BookingsView(Endpoint):
         """Create a booking."""
         fields = ('timeslot_id', 'size')
         rec = prepare_record(request.data, fields)
-        ts = Timeslot.objects.get(pk=int(rec['timeslot_id']))
+        tsid = int(rec['timeslot_id'])
         size = int(rec['size'])
-        #return serialize(Assignment.objects.create(boat=boat, timeslot=ts))
-        return Http400("not implemented")
+        booking = Booking.book_for(tsid, size)
+        return serialize(booking)
