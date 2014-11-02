@@ -14,8 +14,8 @@ class Boat(AuditingModel):
 
 
 class Timeslot(AuditingModel):
-    start_time = models.DateTimeField(null=False, blank=False)
-    duration = models.TimeField(null=False, blank=False)
+    start_time = models.IntegerField(null=False, blank=False)  # good until 2038
+    duration = models.SmallIntegerField(null=False, blank=False)
     availability = models.IntegerField(null=False, blank=False, default=0)
     boats = models.ManyToManyField(Boat, through='Assignment')
 

@@ -30,6 +30,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'corsheaders',
+    'restless',
     'api',
 )
 

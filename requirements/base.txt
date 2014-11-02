@@ -1,3 +1,4 @@
 Django==1.7.1
 python-dateutil==2.2
 django-cors-headers==0.13
+DjangoRestless==0.0.9

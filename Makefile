@@ -3,7 +3,7 @@ ENV := $(CURDIR)/env
 SHELL := /bin/bash
 export PATH := $(ENV)/bin:$(PATH)
 
-.PHONY: test run clean distclean
+.PHONY: test start clean distclean
 
 test: $(ENV)/bin/coverage $(ENV)/bin/django-admin
 	cd passportd; ( \
@@ -16,7 +16,7 @@ test: $(ENV)/bin/coverage $(ENV)/bin/django-admin
 	      coverage report; \
 	      coverage html -d $(CURDIR)/htmlcov ))
 
-run: manage
+start: manage
 	./manage migrate
 	./manage runserver 0.0.0.0:3000
 
