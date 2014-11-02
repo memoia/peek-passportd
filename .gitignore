@@ -3,5 +3,7 @@
 /db.sqlite3
 /htmlcov
 /manage
+/client
 *.sw[po]
 *.py[co]
+/Procfile

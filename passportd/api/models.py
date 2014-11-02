@@ -23,6 +23,10 @@ class Timeslot(AuditingModel):
         # return sum of size for all bookings associated with this timeslot
         pass
 
+    def _update_availability(self):
+        # maximum space remaining on any associated boats
+        pass
+
 
 class Assignment(AuditingModel):
     timeslot = models.ForeignKey(Timeslot)
