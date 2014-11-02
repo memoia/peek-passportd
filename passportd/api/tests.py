@@ -54,7 +54,7 @@ class AssignmentsViewTests(TestCase):
     url = reverse('api:assignments')
 
     def test_returns_keys_on_post(self):
-        ts = models.Timeslot.objects.create(start_time=1, duration=1)
+        ts = models.Timeslot.objects.create(start_time=1, end_time=2)
         bt = models.Boat.objects.create(capacity=1, name='Wobbly')
         resp = self.client.post(self.url, {
             'timeslot_id': ts.pk,

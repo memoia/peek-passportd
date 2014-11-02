@@ -1,6 +1,6 @@
 from dateutil import parser as dateparser
 from restless.views import Endpoint
-from restless.http import Http400
+from restless.http import Http400, Http409
 from restless.models import serialize
 
 from api.models import Timeslot, Boat, Assignment, Booking
@@ -20,6 +20,8 @@ class TimeslotsView(Endpoint):
         for k in self.all_fields:
             if hasattr(record, k):
                 data[k] = getattr(record, k)
+        data['availability'] = record.availability
+        data['duration'] = record.duration
         data['customer_count'] = record.customer_count
         data['boats'] = [boat.pk for boat in record.boats.all()]
         return data
@@ -28,6 +30,8 @@ class TimeslotsView(Endpoint):
         """Create a timeslot."""
         fields = ('start_time', 'duration')
         rec = prepare_record(request.data, fields)
+        rec['end_time'] = int(rec['start_time']) + (int(rec['duration']) * 60)
+        del rec['duration']
         return serialize(self._augment(Timeslot.objects.create(**rec)))
 
     def get(self, request):
@@ -70,5 +74,8 @@ class BookingsView(Endpoint):
         rec = prepare_record(request.data, fields)
         tsid = int(rec['timeslot_id'])
         size = int(rec['size'])
-        booking = Booking.book_for(tsid, size)
+        try:
+            booking = Booking.book_for(tsid, size)
+        except ValueError as err:
+            return Http409(err.message)
         return serialize(booking)
