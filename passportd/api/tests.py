@@ -64,6 +64,36 @@ class AssignmentsViewTests(TestCase):
         self.assertEqual(data['boat'], bt.pk)
         self.assertEqual(data['timeslot'], ts.pk)
 
+
+class BookingsViewTests(TestCase):
+    url = reverse('api:bookings')
+
+    def test_post_happy_path(self):
+        ts = models.Timeslot.objects.create(start_time=1, end_time=2)
+        bt = models.Boat.objects.create(capacity=10, name='Bubbles')
+        asgn = models.Assignment.objects.create(boat=bt, timeslot=ts)
+
+        resp = self.client.post(self.url, {
+            'timeslot_id': ts.pk,
+            'size': 8,
+        })
+        data = json.loads(resp.content)
+        self.assertEqual(data['size'], 8)
+
+    def test_post_cant_book_it(self):
+        ts = models.Timeslot.objects.create(start_time=1, end_time=2)
+        bt = models.Boat.objects.create(capacity=5, name='Salts')
+        asgn = models.Assignment.objects.create(boat=bt, timeslot=ts)
+
+        resp = self.client.post(self.url, {
+            'timeslot_id': ts.pk,
+            'size': 8,
+        })
+        data = json.loads(resp.content)
+        self.assertEqual(resp.status_code, 409)
+        self.assertTrue('error' in data)
+
+
 class UtilTests(TestCase):
     def test_prepare_record(self):
         inrec = {
