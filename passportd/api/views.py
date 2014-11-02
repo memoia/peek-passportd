@@ -13,38 +13,40 @@ class PingView(Endpoint):
 
 
 class TimeslotsView(Endpoint):
-    # XXX customer_count and boats need to be returned, too
+    all_fields = Timeslot._meta.get_all_field_names()
+
+    def _augment(self, record):
+        data = {}
+        for k in self.all_fields:
+            if hasattr(record, k):
+                data[k] = getattr(record, k)
+        data['customer_count'] = record.customer_count
+        data['boats'] = [boat.pk for boat in record.boats.all()]
+        return data
 
     def post(self, request):
-        """Create a timeslot.
-
-        {"timeslot[start_time]": start time of timeslot as unixtime,
-         "timeslot[duration]": length of timeslot in minutes}
-        """
-        return serialize(Timeslot.objects.create(**prepare_record(request.data)))
+        """Create a timeslot."""
+        fields = ('start_time', 'duration')
+        rec = prepare_record(request.data, fields)
+        return serialize(self._augment(Timeslot.objects.create(**rec)))
 
     def get(self, request):
-        """List timeslots.
-
-        ?date: YYYY-MM-DD format for day to return timeslots
-        """
+        """List timeslots. ?date: YYYY-MM-DD format."""
         try:
             dt = dateparser.parse(request.params.get('date'))
         except:
             return Http400("date param missing or invalid format")
         match = dict(zip(('start_time__gte', 'start_time__lt'),
                          date_bounds(dt)))
-        return serialize(Timeslot.objects.filter(**match))
+        return serialize([self._augment(rec) for rec in Timeslot.objects.filter(**match)])
 
 
 class BoatsView(Endpoint):
     def post(self, request):
-        """Create a boat.
-
-        {"boat[capacity]": number of passengers boat can carry,
-         "boat[name]": name of the boat}
-        """
-        return serialize(Boat.objects.create(**prepare_record(request.data)))
+        """Create a boat."""
+        fields = ('capacity', 'name')
+        rec = prepare_record(request.data, fields)
+        return serialize(Boat.objects.create(**rec))
 
     def get(self, request):
         """List all boats."""
@@ -53,12 +55,9 @@ class BoatsView(Endpoint):
 
 class AssignmentsView(Endpoint):
     def post(self, request):
-        """Assign boat to timeslot.
-
-        {"assignment[timeslot_id]": existing timeslot id,
-         "assignment[boat_id]": existing boat id}
-        """
-        ids = prepare_record(request.data)
+        """Assign boat to timeslot."""
+        fields = ('timeslot_id', 'boat_id')
+        ids = prepare_record(request.data, fields)
         ts = Timeslot.objects.get(pk=int(ids['timeslot_id']))
         boat = Boat.objects.get(pk=int(ids['boat_id']))
         return serialize(Assignment.objects.create(boat=boat, timeslot=ts))
@@ -66,12 +65,9 @@ class AssignmentsView(Endpoint):
 
 class BookingsView(Endpoint):
     def post(self, request):
-        """Create a booking.
-
-        {"booking[timeslot_id]": existing timeslot id,
-         "booking[size]": the size of the booking party}
-        """
-        rec = prepare_record(request.data)
+        """Create a booking."""
+        fields = ('timeslot_id', 'size')
+        rec = prepare_record(request.data, fields)
         ts = Timeslot.objects.get(pk=int(rec['timeslot_id']))
         size = int(rec['size'])
         #return serialize(Assignment.objects.create(boat=boat, timeslot=ts))
