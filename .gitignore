@@ -1,6 +1,6 @@
 .coverage
 /env
-/db.sqlite3
+/*.sqlite3
 /htmlcov
 /manage
 /client
