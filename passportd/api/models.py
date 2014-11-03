@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models import Q
 
+from api.util import timestamps_to_duration_minutes
+
 
 class AuditingModel(models.Model):
     established = models.DateTimeField(auto_now_add=True)
@@ -21,7 +23,7 @@ class Timeslot(AuditingModel):
 
     @property
     def duration(self):
-        return (int(self.end_time) - int(self.start_time)) / 60
+        return timestamps_to_duration_minutes(self.start_time, self.end_time)
 
     @property
     def customer_count(self):
@@ -69,7 +71,8 @@ class Assignment(AuditingModel):
     def find_bookable(timeslot, booking_size):
         """Identify an available boat assignment that can accommodate
         size at given timeslot. Returns accommodating assignment with
-        least remaining capacity."""
+        least remaining capacity.
+        """
         assignments = Assignment.objects.filter(timeslot=timeslot)
         room_assgn = [(a.boat_availability, a) for a in assignments]
         available = filter(lambda r: r[0] >= booking_size, room_assgn)

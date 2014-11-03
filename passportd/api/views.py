@@ -4,7 +4,7 @@ from restless.http import Http400, Http409
 from restless.models import serialize
 
 from api.models import Timeslot, Boat, Assignment, Booking
-from api.util import prepare_record, date_bounds
+from api.util import prepare_record, date_bounds, duration_to_timestamp
 
 
 class PingView(Endpoint):
@@ -16,10 +16,8 @@ class TimeslotsView(Endpoint):
     all_fields = Timeslot._meta.get_all_field_names()
 
     def _augment(self, record):
-        data = {}
-        for k in self.all_fields:
-            if hasattr(record, k):
-                data[k] = getattr(record, k)
+        data = {k: getattr(record, k) for k in self.all_fields
+                if hasattr(record, k)}
         data['availability'] = record.availability
         data['duration'] = record.duration
         data['customer_count'] = record.customer_count
@@ -30,7 +28,7 @@ class TimeslotsView(Endpoint):
         """Create a timeslot."""
         fields = ('start_time', 'duration')
         rec = prepare_record(request.data, fields)
-        rec['end_time'] = int(rec['start_time']) + (int(rec['duration']) * 60)
+        rec['end_time'] = duration_to_timestamp(rec['duration'], rec['start_time'])
         del rec['duration']
         return serialize(self._augment(Timeslot.objects.create(**rec)))
 
