@@ -22,6 +22,7 @@ Some thoughts
 -------------
 
 Aside from the data modeling and web API stuff, this seems
-like a variant of the knapsack optimization problem. We want
+to suggest a variant of the knapsack optimization problem. We want
 to fit as many groups as we can onto the boats that we have
-available at any given timeslot.
+available at any given timeslot. Or, maybe in the future we'd like
+to, but for now we don't care.
