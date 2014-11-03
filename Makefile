@@ -54,7 +54,8 @@ Procfile:
 	echo "func: $(ENV)/bin/python func.py" >> $@
 
 func: Procfile test
-	honcho start api func
+	honcho start api func; \
+	kill -9 `ps aux | grep 'manage.py runserver.*3000' | awk '{print $$2}'`
 
 run: Procfile $(CURDIR)/client
 	honcho start api client
